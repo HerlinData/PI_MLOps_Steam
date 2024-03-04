@@ -36,9 +36,9 @@ async def get_recomendacion_juego(id_producto: int):
     result = recomendacion_juego(id_producto)
     return JSONResponse(content=result)
 
-@app.get("/recomendacion_usuario1/{id_usuario}")
-async def get_recomendacion_usuario1(id_usuario: str):
-    result = recomendacion_usuario1(id_usuario)
+@app.get("/recomendacion_usuario/{id_usuario}")
+async def get_recomendacion_usuario(id_usuario: str):
+    result = recomendacion_usuario(id_usuario)
     return JSONResponse(content=result)
 
 if __name__ == "__main__":

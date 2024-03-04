@@ -145,10 +145,10 @@ def recomendacion_juego(id_producto):
 #     return nombres_juegos
 
 
-def recomendacion_usuario1(user_id):
+def recomendacion_usuario(user_id):
     # Carga de datos con las columnas necesarias
     columnas = ['user_id', 'item_id', 'recommend', 'app_name', 'Sentiment_analysis']
-    df = pd.read_csv('data_fusionada.csv', usecols=columnas)
+    df = pd.read_csv('usuarios_filtrados.csv', usecols=columnas)
     top_n = 5
     # Convertir Sentiment_analysis de bool a int para optimizar
     df['Sentiment_analysis'] = df['Sentiment_analysis'].astype(int)
