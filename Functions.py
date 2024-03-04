@@ -115,104 +115,49 @@ def recomendacion_juego(id_producto):
     except IndexError:
         return "El juego con el ID especificado no existe en la base de datos."
     
-# def recomendacion_usuario(user_id):
-    
-#     columnas = ['user_id', 'item_id', 'recommend', 'app_name']
-#     df = pd.read_csv('data_fusionada.csv', usecols=columnas)
-#     top_n = 5
-    
-#     df['interaction'] = df['recommend'].astype(int)
-    
-#     matriz_utilidad = df.pivot_table(index='user_id', columns='item_id', values='interaction', fill_value=0)
-#     similitudes = cosine_similarity(matriz_utilidad)
-#     similitudes_df = pd.DataFrame(similitudes, index=matriz_utilidad.index, columns=matriz_utilidad.index)
-    
-#     if user_id not in similitudes_df.index:
-#         return "El ID de usuario proporcionado no existe en la base de datos."
-    
-#     usuarios_similares = similitudes_df[user_id].sort_values(ascending=False)[1:11]
-    
-#     juegos_recomendados = set()
-#     for usuario_similar in usuarios_similares.index:
-#         juegos_usuario_similar = set(matriz_utilidad.columns[(matriz_utilidad.loc[usuario_similar] > 0)])
-#         juegos_usuario = set(matriz_utilidad.columns[(matriz_utilidad.loc[user_id] > 0)])
-#         juegos_recomendados.update(juegos_usuario_similar.difference(juegos_usuario))
-    
-#     juegos_recomendados = list(juegos_recomendados)[:top_n]
-    
-#     nombres_juegos = df[df['item_id'].isin(juegos_recomendados)]['app_name'].drop_duplicates().tolist()
-    
-#     return nombres_juegos
-
 
 def recomendacion_usuario(user_id):
-    # Carga de datos con las columnas necesarias
+    
     columnas = ['user_id', 'item_id', 'recommend', 'app_name', 'Sentiment_analysis']
     df = pd.read_csv('usuarios_filtrados.csv', usecols=columnas)
     top_n = 5
-    # Convertir Sentiment_analysis de bool a int para optimizar
-    df['Sentiment_analysis'] = df['Sentiment_analysis'].astype(int)
     
-    # Filtrar por Sentiment_analysis para incluir solo negativos (0) y positivos (1), y usar copy()
-    df_filtrado = df[df['Sentiment_analysis'].isin([0, 1])].copy()
-    
-    # Convertir 'recommend' a enteros
-    df_filtrado['interaction'] = df_filtrado['recommend'].astype(int)
+    df['interaction'] = df['recommend'].astype(int)
     
     # Crear la matriz de utilidad
-    matriz_utilidad = df_filtrado.pivot_table(index='user_id', columns='item_id', values='interaction', fill_value=0)
+    matriz_utilidad = df.pivot_table(index='user_id', columns='item_id', values='interaction', fill_value=0)
     
     # Calcular la similitud de coseno entre usuarios
     similitudes = cosine_similarity(matriz_utilidad)
     similitudes_df = pd.DataFrame(similitudes, index=matriz_utilidad.index, columns=matriz_utilidad.index)
     
-    if user_id not in similitudes_df.index:
-        return "El ID de usuario proporcionado no existe en la base de datos."
+    juegos_recomendados_nombres = []
     
-    # Encontrar usuarios similares
-    usuarios_similares = similitudes_df[user_id].sort_values(ascending=False)[1:11]
+    # Comprobar si el ID de usuario existe
+    if user_id in similitudes_df.index:
+        # Encontrar usuarios similares
+        usuarios_similares = similitudes_df[user_id].sort_values(ascending=False)[1:11]
+        
+        # Recopilar recomendaciones de item_id
+        juegos_recomendados = set()
+        for usuario_similar in usuarios_similares.index:
+            juegos_usuario_similar = set(matriz_utilidad.columns[(matriz_utilidad.loc[usuario_similar] > 0)])
+            juegos_usuario = set(matriz_utilidad.columns[(matriz_utilidad.loc[user_id] > 0)])
+            juegos_recomendados.update(juegos_usuario_similar.difference(juegos_usuario))
+        
+        # Convertir item_id recomendados a nombres de juegos
+        juegos_recomendados_nombres = df[df['item_id'].isin(juegos_recomendados)]['app_name'].drop_duplicates().tolist()
+
+    # Complementar con juegos populares si hay menos de top_n recomendaciones
+    if len(juegos_recomendados_nombres) < top_n:
+        juegos_populares_nombres = df[df['recommend'] == 1]['app_name'].value_counts().index.tolist()
+        # Excluir los ya recomendados por nombre
+        juegos_populares_nombres = [juego for juego in juegos_populares_nombres if juego not in juegos_recomendados_nombres]
+        # Complementar recomendaciones hasta alcanzar top_n
+        juegos_recomendados_nombres += juegos_populares_nombres[:top_n - len(juegos_recomendados_nombres)]
     
-    # Recopilar recomendaciones
-    juegos_recomendados = set()
-    for usuario_similar in usuarios_similares.index:
-        juegos_usuario_similar = set(matriz_utilidad.columns[(matriz_utilidad.loc[usuario_similar] > 0)])
-        juegos_usuario = set(matriz_utilidad.columns[(matriz_utilidad.loc[user_id] > 0)])
-        juegos_recomendados.update(juegos_usuario_similar.difference(juegos_usuario))
+    # Si el usuario no existe en la base de datos, recomendar los juegos más populares
+    if not juegos_recomendados_nombres:
+        juegos_recomendados_nombres = df[df['recommend'] == 1]['app_name'].value_counts().head(top_n).index.tolist()
     
-    juegos_recomendados = list(juegos_recomendados)[:top_n]
-    
-    # Obtener nombres de los juegos recomendados
-    nombres_juegos = df[df['item_id'].isin(juegos_recomendados)]['app_name'].drop_duplicates().tolist()
-    
-    return nombres_juegos
-
-
-
-
-
-# def best_developer_year(anio):
-#     # Cargar el DataFrame desde el archivo parquet
-#     df_merged = pd.read_parquet('data/df_merge.parquet')
-    
-#     # Convertir 'item_id' a object en ambos DataFrames
-#     df_merged['Sentiment_analysis'] = df_merged['Sentiment_analysis'].astype('int')
-#     df_merged['item_id'] = df_merged['item_id'].astype('object')
-    
-#     df_merged['recommend'] = df_merged['recommend'].astype(bool)
-    
-#     # Filtrar por el año dado
-#     df_filtered = df_merged[df_merged['Años'] == anio]
-
-#     # Filtrar por reviews positivas y recomendadas
-#     df_filtered = df_filtered[(df_filtered['recommend'] == True) & (df_filtered['Sentiment_analysis'] == 2)]
-
-#     # Contar el número de juegos recomendados por cada desarrollador
-#     developer_counts = df_filtered.groupby('publisher')['item_id'].nunique()
-
-#     # Obtener el top 3 de desarrolladores
-#     top_developers = developer_counts.nlargest(3)
-
-#     # Construir el resultado en el formato especificado
-#     resultado = [{"Puesto {}".format(i+1): developer} for i, developer in enumerate(top_developers.index)]
-#     cadena_json = json.dumps(resultado, indent=2)
-#     return (cadena_json)
+    return juegos_recomendados_nombres[:top_n]
