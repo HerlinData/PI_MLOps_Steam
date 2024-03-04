@@ -31,6 +31,16 @@ async def get_developer_reviews(developer_name: str):
     result = developer_reviews_analysis(developer_name)
     return JSONResponse(content=result)
 
+@app.get("/recomendacion_juego/{id_producto}")
+async def get_recomendacion_juego(id_producto: int):
+    result = recomendacion_juego(id_producto)
+    return JSONResponse(content=result)
+
+@app.get("/recomendacion_usuario/{id_usuario}")
+async def get_recomendacion_usuario(id_usuario: str):
+    result = recomendacion_usuario(id_usuario)
+    return JSONResponse(content=result)
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="127.0.0.1", port=8000)

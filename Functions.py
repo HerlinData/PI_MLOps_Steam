@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
 
 def developer(desarrollador):
     
@@ -82,3 +83,62 @@ def developer_reviews_analysis(desarrolladora):
     resultado = {desarrolladora: {"Negative": negative_reviews, "Positive": positive_reviews}}
     
     return resultado
+
+
+def recomendacion_juego(id_producto):
+
+    df = pd.read_csv("data_fusionada.csv")
+    
+    columnas = ['app_name', 'item_id', 'genres']
+    df = df[columnas]
+    
+    # Filtrar las filas que no deseamos
+    df = df[df['genres'] != 'Pendiente de clasificación']
+    
+    df_dummies = pd.get_dummies(df, columns=['genres'], prefix="")
+    df_agrupado = df_dummies.groupby(['item_id', 'app_name'], as_index=False).sum()
+    
+    # Calcular la similitud del coseno basada en las variables dummy
+    similitudes = cosine_similarity(df_agrupado.iloc[:, 2:])
+    
+    try:
+        idx = df_agrupado.index[df_agrupado['item_id'] == id_producto].tolist()[0]
+        similarity_scores = list(enumerate(similitudes[idx]))
+        similarity_scores = sorted(similarity_scores, key=lambda x: x[1], reverse=True)
+        indices_similares = [i[0] for i in similarity_scores[1:6]]
+        
+        # Obtener los nombres de los 5 juegos recomendados
+        juegos_recomendados = df_agrupado.iloc[indices_similares]['app_name']
+        
+        return juegos_recomendados.to_list()
+    except IndexError:
+        return "El juego con el ID especificado no existe en la base de datos."
+    
+
+def recomendacion_usuario(user_id, top_n=5, archivo_datos='data_fusionada.csv'):
+    
+    columnas = ['user_id', 'item_id', 'recommend', 'app_name']
+    df = pd.read_csv(archivo_datos, usecols=columnas)
+    
+    df['interaction'] = df['recommend'].astype(int)
+    
+    matriz_utilidad = df.pivot_table(index='user_id', columns='item_id', values='interaction', fill_value=0)
+    similitudes = cosine_similarity(matriz_utilidad)
+    similitudes_df = pd.DataFrame(similitudes, index=matriz_utilidad.index, columns=matriz_utilidad.index)
+    
+    if user_id not in similitudes_df.index:
+        return "El ID de usuario proporcionado no existe en la base de datos."
+    
+    usuarios_similares = similitudes_df[user_id].sort_values(ascending=False)[1:11]
+    
+    juegos_recomendados = set()
+    for usuario_similar in usuarios_similares.index:
+        juegos_usuario_similar = set(matriz_utilidad.columns[(matriz_utilidad.loc[usuario_similar] > 0)])
+        juegos_usuario = set(matriz_utilidad.columns[(matriz_utilidad.loc[user_id] > 0)])
+        juegos_recomendados.update(juegos_usuario_similar.difference(juegos_usuario))
+    
+    juegos_recomendados = list(juegos_recomendados)[:top_n]
+    
+    nombres_juegos = df[df['item_id'].isin(juegos_recomendados)]['app_name'].drop_duplicates().tolist()
+    
+    return nombres_juegos
