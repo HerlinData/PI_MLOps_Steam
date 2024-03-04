@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
+from scipy.sparse import csr_matrix
 
 def developer(desarrollador):
     
@@ -114,31 +115,64 @@ def recomendacion_juego(id_producto):
     except IndexError:
         return "El juego con el ID especificado no existe en la base de datos."
     
+# def recomendacion_usuario(user_id):
+    
+#     columnas = ['user_id', 'item_id', 'recommend', 'app_name']
+#     df = pd.read_csv('data_fusionada.csv', usecols=columnas)
+#     top_n = 5
+    
+#     df['interaction'] = df['recommend'].astype(int)
+    
+#     matriz_utilidad = df.pivot_table(index='user_id', columns='item_id', values='interaction', fill_value=0)
+#     similitudes = cosine_similarity(matriz_utilidad)
+#     similitudes_df = pd.DataFrame(similitudes, index=matriz_utilidad.index, columns=matriz_utilidad.index)
+    
+#     if user_id not in similitudes_df.index:
+#         return "El ID de usuario proporcionado no existe en la base de datos."
+    
+#     usuarios_similares = similitudes_df[user_id].sort_values(ascending=False)[1:11]
+    
+#     juegos_recomendados = set()
+#     for usuario_similar in usuarios_similares.index:
+#         juegos_usuario_similar = set(matriz_utilidad.columns[(matriz_utilidad.loc[usuario_similar] > 0)])
+#         juegos_usuario = set(matriz_utilidad.columns[(matriz_utilidad.loc[user_id] > 0)])
+#         juegos_recomendados.update(juegos_usuario_similar.difference(juegos_usuario))
+    
+#     juegos_recomendados = list(juegos_recomendados)[:top_n]
+    
+#     nombres_juegos = df[df['item_id'].isin(juegos_recomendados)]['app_name'].drop_duplicates().tolist()
+    
+#     return nombres_juegos
 
-def recomendacion_usuario(user_id):
-    
-    # columnas = ['user_id', 'item_id', 'recommend', 'app_name']
-    # df = pd.read_parquet('data_fusionada.parquet', columns=columnas)
-    
-    
-    df = pd.read_parquet('data_fusionada.parquet')
 
-    # Seleccionar las columnas deseadas
-    columnas_deseadas = ['user_id', 'item_id', 'recommend', 'app_name']
-    df = df[columnas_deseadas]
+def recomendacion_usuario1(user_id):
+    # Carga de datos con las columnas necesarias
+    columnas = ['user_id', 'item_id', 'recommend', 'app_name', 'Sentiment_analysis']
+    df = pd.read_csv('data_fusionada.csv', usecols=columnas)
     top_n = 5
+    # Convertir Sentiment_analysis de bool a int para optimizar
+    df['Sentiment_analysis'] = df['Sentiment_analysis'].astype(int)
     
-    df['interaction'] = df['recommend'].astype(int)
+    # Filtrar por Sentiment_analysis para incluir solo negativos (0) y positivos (1), y usar copy()
+    df_filtrado = df[df['Sentiment_analysis'].isin([0, 1])].copy()
     
-    matriz_utilidad = df.pivot_table(index='user_id', columns='item_id', values='interaction', fill_value=0)
+    # Convertir 'recommend' a enteros
+    df_filtrado['interaction'] = df_filtrado['recommend'].astype(int)
+    
+    # Crear la matriz de utilidad
+    matriz_utilidad = df_filtrado.pivot_table(index='user_id', columns='item_id', values='interaction', fill_value=0)
+    
+    # Calcular la similitud de coseno entre usuarios
     similitudes = cosine_similarity(matriz_utilidad)
     similitudes_df = pd.DataFrame(similitudes, index=matriz_utilidad.index, columns=matriz_utilidad.index)
     
     if user_id not in similitudes_df.index:
         return "El ID de usuario proporcionado no existe en la base de datos."
     
+    # Encontrar usuarios similares
     usuarios_similares = similitudes_df[user_id].sort_values(ascending=False)[1:11]
     
+    # Recopilar recomendaciones
     juegos_recomendados = set()
     for usuario_similar in usuarios_similares.index:
         juegos_usuario_similar = set(matriz_utilidad.columns[(matriz_utilidad.loc[usuario_similar] > 0)])
@@ -147,9 +181,14 @@ def recomendacion_usuario(user_id):
     
     juegos_recomendados = list(juegos_recomendados)[:top_n]
     
+    # Obtener nombres de los juegos recomendados
     nombres_juegos = df[df['item_id'].isin(juegos_recomendados)]['app_name'].drop_duplicates().tolist()
     
     return nombres_juegos
+
+
+
+
 
 # def best_developer_year(anio):
 #     # Cargar el DataFrame desde el archivo parquet
