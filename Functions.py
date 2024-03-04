@@ -117,9 +117,15 @@ def recomendacion_juego(id_producto):
 
 def recomendacion_usuario(user_id):
     
-    columnas = ['user_id', 'item_id', 'recommend', 'app_name']
-    df = pd.read_parquet('data_fusionada.parquet', columns=columnas)
+    # columnas = ['user_id', 'item_id', 'recommend', 'app_name']
+    # df = pd.read_parquet('data_fusionada.parquet', columns=columnas)
     
+    
+    df = pd.read_parquet('data_fusionada.parquet')
+
+    # Seleccionar las columnas deseadas
+    columnas_deseadas = ['user_id', 'item_id', 'recommend', 'app_name']
+    df = df[columnas_deseadas]
     top_n = 5
     
     df['interaction'] = df['recommend'].astype(int)
@@ -144,3 +150,30 @@ def recomendacion_usuario(user_id):
     nombres_juegos = df[df['item_id'].isin(juegos_recomendados)]['app_name'].drop_duplicates().tolist()
     
     return nombres_juegos
+
+# def best_developer_year(anio):
+#     # Cargar el DataFrame desde el archivo parquet
+#     df_merged = pd.read_parquet('data/df_merge.parquet')
+    
+#     # Convertir 'item_id' a object en ambos DataFrames
+#     df_merged['Sentiment_analysis'] = df_merged['Sentiment_analysis'].astype('int')
+#     df_merged['item_id'] = df_merged['item_id'].astype('object')
+    
+#     df_merged['recommend'] = df_merged['recommend'].astype(bool)
+    
+#     # Filtrar por el año dado
+#     df_filtered = df_merged[df_merged['Años'] == anio]
+
+#     # Filtrar por reviews positivas y recomendadas
+#     df_filtered = df_filtered[(df_filtered['recommend'] == True) & (df_filtered['Sentiment_analysis'] == 2)]
+
+#     # Contar el número de juegos recomendados por cada desarrollador
+#     developer_counts = df_filtered.groupby('publisher')['item_id'].nunique()
+
+#     # Obtener el top 3 de desarrolladores
+#     top_developers = developer_counts.nlargest(3)
+
+#     # Construir el resultado en el formato especificado
+#     resultado = [{"Puesto {}".format(i+1): developer} for i, developer in enumerate(top_developers.index)]
+#     cadena_json = json.dumps(resultado, indent=2)
+#     return (cadena_json)
