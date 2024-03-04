@@ -118,7 +118,8 @@ def recomendacion_juego(id_producto):
 def recomendacion_usuario(user_id):
     
     columnas = ['user_id', 'item_id', 'recommend', 'app_name']
-    df = pd.read_csv('data_fusionada.csv', usecols=columnas)
+    df = pd.read_parquet('data_fusionada.parquet', columns=columnas)
+    
     top_n = 5
     
     df['interaction'] = df['recommend'].astype(int)
