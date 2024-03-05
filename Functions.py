@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from scipy.sparse import csr_matrix
+from sklearn.preprocessing import StandardScaler
 
 def developer(desarrollador):
     
@@ -86,40 +87,39 @@ def developer_reviews_analysis(desarrolladora):
     return resultado
 
 
-def recomendacion_juego(id_producto):
-
-    df = pd.read_csv("data_fusionada.csv")
+def recomendacion_juego(item_id):
+    df = pd.read_csv('dataML_item_item.csv')
     
-    columnas = ['app_name', 'item_id', 'genres']
-    df = df[columnas]
     
-    # Filtrar las filas que no deseamos
-    df = df[df['genres'] != 'Pendiente de clasificación']
+    if item_id not in df['item_id'].unique():
+        juegos_populares = df.groupby('app_name')['playtime_forever'].sum().nlargest(5).index.tolist()
+        return juegos_populares
     
-    df_dummies = pd.get_dummies(df, columns=['genres'], prefix="")
-    df_agrupado = df_dummies.groupby(['item_id', 'app_name'], as_index=False).sum()
+    df['item_id'] = df['item_id'].astype(int)
     
-    # Calcular la similitud del coseno basada en las variables dummy
-    similitudes = cosine_similarity(df_agrupado.iloc[:, 2:])
+    juegos_df = df.groupby('item_id').agg({
+        'recommend': 'sum',
+        'playtime_forever': 'mean',
+        'genres': 'mean'
+    }).reset_index()
     
-    try:
-        idx = df_agrupado.index[df_agrupado['item_id'] == id_producto].tolist()[0]
-        similarity_scores = list(enumerate(similitudes[idx]))
-        similarity_scores = sorted(similarity_scores, key=lambda x: x[1], reverse=True)
-        indices_similares = [i[0] for i in similarity_scores[1:6]]
-        
-        # Obtener los nombres de los 5 juegos recomendados
-        juegos_recomendados = df_agrupado.iloc[indices_similares]['app_name']
-        
-        return juegos_recomendados.to_list()
-    except IndexError:
-        return "El juego con el ID especificado no existe en la base de datos."
+    scaler = StandardScaler()
+    juegos_df_scaled = scaler.fit_transform(juegos_df[['recommend', 'playtime_forever', 'genres']])
+    
+    # Calcular la similitud del coseno
+    similitudes = cosine_similarity(juegos_df_scaled)
+    similitudes_df = pd.DataFrame(similitudes, index=juegos_df['item_id'], columns=juegos_df['item_id'])
+    
+    juegos_similares = similitudes_df[item_id].drop(item_id).nlargest(5).index.tolist()
+    nombres_juegos_similares = df[df['item_id'].isin(juegos_similares)]['app_name'].drop_duplicates().tolist()
+    
+    return nombres_juegos_similares
     
 
 def recomendacion_usuario(user_id):
     
     columnas = ['user_id', 'item_id', 'recommend', 'app_name', 'Sentiment_analysis']
-    df = pd.read_csv('usuarios_filtrados.csv', usecols=columnas)
+    df = pd.read_csv('dataML_user_item.csv', usecols=columnas)
     top_n = 5
     
     df['interaction'] = df['recommend'].astype(int)
