@@ -192,12 +192,13 @@ El sistema de recomendación y análisis de datos de Steam ha sido desplegado en
 
 ### Acceso a la API
 
-La API puede ser accedida a través de la siguiente URL: [https://render.com](https://pi-ml-steam-czmx.onrender.com/docs)
+La API puede ser accedida dando click en la siguiente imagen:
 
-[![Link Render](https://ibb.co/RgyzCZx)](https://pi-ml-steam-czmx.onrender.com/docs)
-
-[![Link_Render](src/ia.jpeg)](https://pi-ml-steam-czmx.onrender.com/docs)
-
+<p align="center">
+  <a href="https://pi-ml-steam-czmx.onrender.com/docs">
+    <img alt="render" src="https://i.postimg.cc/yx8yJbjB/render.png"/>
+  </a>
+</p>
 
 Esta URL sirve como punto de entrada para todas las solicitudes a los endpoints descritos anteriormente.
 
