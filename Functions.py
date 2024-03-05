@@ -6,7 +6,7 @@ from sklearn.preprocessing import StandardScaler
 
 def developer(desarrollador):
     
-    devv = pd.read_csv('data_fusionada.csv')
+    devv = pd.read_csv('datasets/data_fusionada.csv')
     data_filtrada = devv[devv['developer'] == desarrollador]
     por_año = data_filtrada.groupby('release_date')
     
@@ -22,7 +22,7 @@ def developer(desarrollador):
 
 def userdata(user_id):
 
-    udata = pd.read_csv('data_fusionada.csv')
+    udata = pd.read_csv('datasets/data_fusionada.csv')
     data_filtrada = udata[udata['user_id'] == user_id]
     dinero_gastado = data_filtrada['price'].sum()
     
@@ -44,7 +44,7 @@ def userdata(user_id):
 
 def UserForGenre(genero):
 
-    ufg = pd.read_csv('data_fusionada.csv')
+    ufg = pd.read_csv('datasets/data_fusionada.csv')
     data_filtrada = ufg[ufg['genres'].str.contains(genero, case=False, na=False)].copy()
     data_filtrada['playtime_hours'] = data_filtrada['playtime_forever'] / 60
 
@@ -63,7 +63,7 @@ def UserForGenre(genero):
 
 def best_developer_year(año):
     
-    bdy = pd.read_csv('data_fusionada.csv')
+    bdy = pd.read_csv('datasets/data_fusionada.csv')
     filtered_data = bdy[(bdy['release_date'] == año) & (bdy['recommend'] == True) & (bdy['Sentiment_analysis'] > 0)]
     developer_counts = filtered_data.groupby('developer').size().reset_index(name='counts')
     sorted_developers = developer_counts.sort_values(by='counts', ascending=False).head(3)
@@ -76,7 +76,7 @@ def best_developer_year(año):
 
 def developer_reviews_analysis(desarrolladora):
     
-    dra = pd.read_csv('data_fusionada.csv')
+    dra = pd.read_csv('datasets/data_fusionada.csv')
     data_filtrada = dra[dra['developer'] == desarrolladora]
     
     negative_reviews = len(data_filtrada[data_filtrada['Sentiment_analysis'] == 0])
