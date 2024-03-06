@@ -88,7 +88,7 @@ def developer_reviews_analysis(desarrolladora):
 
 
 def recomendacion_juego(item_id):
-    df = pd.read_csv('dataML_item_item.csv')
+    df = pd.read_csv('datasets/dataML_item_item.csv')
     
     
     if item_id not in df['item_id'].unique():
@@ -119,7 +119,7 @@ def recomendacion_juego(item_id):
 def recomendacion_usuario(user_id):
     
     columnas = ['user_id', 'item_id', 'recommend', 'app_name', 'Sentiment_analysis']
-    df = pd.read_csv('dataML_user_item.csv', usecols=columnas)
+    df = pd.read_csv('datasets/dataML_user_item.csv', usecols=columnas)
     top_n = 5
     
     df['interaction'] = df['recommend'].astype(int)
