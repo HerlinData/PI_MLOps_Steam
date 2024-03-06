@@ -25,13 +25,13 @@ En el rol de un MLOps Engineer en Steam, enfrentamos el desafío de desarrollar 
 Los conjuntos de datos son los siguientes:
 
 1. **steam_games.json.gz**
-   - Ruta: [`datsets/steam_games.json.gz`](datasets/steam_games.json.gz)
+   - Ruta: [`datasets/steam_games.json.gz`](datasets/steam_games.json.gz)
 
 2. **user_reviews.json.gz**
-   - Ruta: [`datsets/user_reviews.json.gz`](datasets/user_reviews.json.gz)
+   - Ruta: [`datasets/user_reviews.json.gz`](datasets/user_reviews.json.gz)
 
 3. **users_items.json.gz**
-   - Ruta: [`datsets/users_items.json.gz`](datasets/users_items.json.gz)
+   - Ruta: [`datasets/users_items.json.gz`](datasets/users_items.json.gz)
 
 La información detallada sobre el contenido de cada conjunto se encuentra especificada en el diccionario de datos, disponible en el archivo Excel: datsets/Diccionario de Datos STEAM.xlsx
 
@@ -218,11 +218,19 @@ El proceso de despliegue en Render es directo y se gestionó a través de los si
 
 4. **Monitoreo y Logs**: Render proporciona herramientas para monitorear el rendimiento de la aplicación y acceder a logs en tiempo real, facilitando la detección y corrección de cualquier problema.
 
+# Video
+
+Explicación y demostración del funcionamiento de la API en el [Video](https://www.youtube.com/watch?v=ZrYh8B8nK3U)
+
 ## Conclusión
 
 Este proyecto demuestra la capacidad de integrar operaciones de Machine Learning con desarrollo de software para crear y desplegar una API robusta y escalable para sistemas de recomendación. A través de la limpieza y preparación de datos, desarrollo de modelos de ML, y la implementación de una API con FastAPI, hemos establecido un sistema que mejora significativamente la experiencia de los usuarios en la plataforma Steam. Continuaremos mejorando y expandiendo la API para incluir más funcionalidades y mantener la precisión de las recomendaciones.
 
 Esperamos que este proyecto sirva como un recurso valioso para aquellos interesados en MLOps, desarrollo de APIs, y sistemas de recomendación.
+
+## Autor ✒️
+
+Herlin Yauri Barrios - [Linkedin](https://www.linkedin.com/in/herlin-yauri-barrios-52a054274/)
 
 
 

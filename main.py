@@ -11,7 +11,7 @@ app = FastAPI()
 1. Haga clic en "Try it out".
 2. Ingrese el Developer en el cuadro de abajo.
 3. Observe la cantidad de items y porcentaje de contenido Free por año según empresa desarrolladora.
-4. Sugerencia de developer: Edge of Reality, Standing Stone Games, Valve, TaleWorlds Entertainment.
+4. Sugerencia de developer: Edge of Reality, Bohemia Interactive, Valve, TaleWorlds Entertainment.
 5. Para cambiar de Developer, copie y pegue de las sugerencias y presione Execute nuevamente.</h3></body></html>""", 
          tags=["Developer Stats"])
 async def get_developer_stats(developer_name: str):
