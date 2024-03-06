@@ -24,14 +24,14 @@ En el rol de un MLOps Engineer en Steam, enfrentamos el desafío de desarrollar 
 
 Los conjuntos de datos son los siguientes:
 
-1. **steam_games.json**
-   - Ruta: [`datsets/steam_games.json.gz`](datsets/steam_games.json.gz)
+1. **steam_games.json.gz**
+   - Ruta: [`datsets/steam_games.json.gz`](datasets/steam_games.json.gz)
 
-2. **user_reviews.json**
-   - Ruta: [`datsets/user_reviews.json.gz`](datsets/user_reviews.json.gz)
+2. **user_reviews.json.gz**
+   - Ruta: [`datsets/user_reviews.json.gz`](datasets/user_reviews.json.gz)
 
-3. **users_items.json**
-   - Ruta: [`datsets/users_items.json.gz`](datsets/users_items.json.gz)
+3. **users_items.json.gz**
+   - Ruta: [`datsets/users_items.json.gz`](datasets/users_items.json.gz)
 
 La información detallada sobre el contenido de cada conjunto se encuentra especificada en el diccionario de datos, disponible en el archivo Excel: datsets/Diccionario de Datos STEAM.xlsx
 
@@ -109,7 +109,7 @@ El modelo de recomendación ítem-ítem utilizará este dataset optimizado para 
 Para más detalles sobre la implementación del modelo y el análisis de resultados, consulte el siguiente notebook: [Modelo de Recomendación Ítem-Ítem](Notebooks/4_Optimizacion_df_ml.ipynb).
 
 - **Data generada en este proceso**
-   - Ruta: [`Items óptimos para entrenamiento`](datsets/dataML_item_item.csv)
+   - Ruta: [`Items óptimos para entrenamiento`](datasets/dataML_item_item.csv)
 
 ### 4.1. Filtrado de Usuarios para el Entrenamiento del Modelo
 
@@ -138,7 +138,7 @@ El resultado de este filtrado es un conjunto de datos más manejable y represent
 Para más detalles sobre el filtrado y la preparación de datos, consulte el notebook: [Proceso de Filtrado](Notebooks/4_Optimizacion_df_ml.ipynb).
 
 - **Data generada en este proceso**
-   - Ruta: [`Users óptimos para entrenamiento`](datsets/dataML_user_item.csv)
+   - Ruta: [`Users óptimos para entrenamiento`](datasets/dataML_user_item.csv)
 
 
 
